@@ -1,64 +1,44 @@
-var express = require('express');
-var r = express.Router();
+const tf = require('@tensorflow/tfjs-node');
 
-// load pre-trained model
-const model = require('./sdk/model.js'); //predict 
+function normalized(data){ // x & y
+    x1 = (data[0] - 42.66333) / 10.61528
+    x2 = (data[1] - 88.73667) / 19.01403 
+    x3 = (data[2] - 143.0478) / 23.06124 
+    return [x1, x2, x3]
+}
+
+function denormalized(data){
+    y1 = (data[0] * 9.184435) + 74.73778
+    y2 = (data[1] * 14.72226) + 49.82889
+    y3 = (data[2] * 23.97945) + 159.7089
+    return [y1, y2, y3]
+}
 
 
-// Bot Setting
-const TelegramBot = require('node-telegram-bot-api');
-const token = '5002726685:AAHEjvJwJdfjPImumA1GfCPHoeu3mCMbbas'
-const bot = new TelegramBot(token, {polling: true});
+async function predict(data){
+    let in_dim = 3;
+    
+    data = normalized(data);
+    shape = [1, in_dim];
 
-state=0;
-// main menu bot
-bot.onText(/\/start/, (msg) => { 
-    console.log(msg)
-    bot.sendMessage(
-        msg.chat.id,
-        `hello ${msg.chat.first_name}, welcome...\n
-        click /predict`
-    );  
-});
+    tf_data = tf.tensor2d(data, shape);
 
-// input I dan r
-bot.onText(/\/predict/, (msg) => { 
-    bot.sendMessage(
-        msg.chat.id,
-        `masukan nilai x1|x2|x3 contoh 9|9|3`
-    );   
-    state = 1;
-});
-
-bot.on('message',(msg) =>{
-    if(state == 1){
-    s= msg.text.split("|");
-    x1 = s[0]
-    x2 = s[1]
-    x3 = s[2]  
-     model.predict(
-[
-    parseFloat(s[0]), // string to float
-    parseFloat(s[1]),
-    parseFloat(s[2])
-]
-).then((jres)=>{
-    bot.sendMessage(
-         msg.chat.id,
-         `nilai x1 yang diprediksi adalah ${jres[0]} n`
-            );
-    bot.sendMessage(
-         msg.chat.id,
-          `nilai x2 yang diprediksi adalah ${jres[1]} n`
-            );
-     bot.sendMessage(
-         msg.chat.id,
-         `nilai x3 yang diprediksi adalah ${jres[2]} n`
-            );
-   })
-}else{
-state = 0;
+    try{
+        // path load in public access => github
+        const path = 'https://raw.githubusercontent.com/Rizwira/UAS_SC_Rizky/main/public/ex_model/model.json';
+        const model = await tf.loadGraphModel(path);
+        
+        predict = model.predict(
+                tf_data
+        );
+        result = predict.dataSync();
+        return denormalized( result );
+        
+    }catch(e){
+      console.log(e);
     }
-})
+}
 
-module.exports = r;
+module.exports = {
+    predict: predict 
+}
