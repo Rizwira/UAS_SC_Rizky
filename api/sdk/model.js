@@ -1,6 +1,6 @@
 const tf = require('@tensorflow/tfjs-node');
 
-function normalized(data){ // i & r
+function normalized(data){ // x & y
     i = (data[0] - 12.585) / 6.813882
     r = (data[1] - 51.4795) / 29.151289
     r = (data[1] - 51.4795) / 29.151289
@@ -25,7 +25,7 @@ async function predict(data){
 
     try{
         // path load in public access => github
-        const path = 'https://raw.githubusercontent.com/Rizwira/bot_uas_sc_rizky/main/bot_uas_sc_rizky/public/ex_model/model.jsonn';
+        const path = 'https://raw.githubusercontent.com/ercooss/UAS_SC/main/public/dnn_model/model.json';
         const model = await tf.loadGraphModel(path);
         
         predict = model.predict(
@@ -42,4 +42,3 @@ async function predict(data){
 module.exports = {
     predict: predict 
 }
-  
