@@ -1,17 +1,17 @@
 const tf = require('@tensorflow/tfjs-node');
 
 function normalized(data){ // x & y
-    i = (data[0] - 12.585) / 6.813882
-    r = (data[1] - 51.4795) / 29.151289
-    r = (data[1] - 51.4795) / 29.151289
-    return [i, r]
+    x1 = (data[0] - 42.66333) / 10.61528
+    x2 = (data[1] - 88.73667) / 19.01403 
+    x3 = (data[2] - 143.0478) / 23.06124
+    return [x1, x2, x3]
 }
 
 function denormalized(data){
-    v = (data[0] * 552.6264) + 650.4795
-    p = (data[1] * 12153.8) + 10620.5615
-    p = (data[1] * 12153.8) + 10620.5615
-    return [v, p]
+    y1 = (data[0] * 9.184435) + 74.73778
+    y2 = (data[1] * 14.72226) + 49.8289
+    y3 = (data[2] * 23.97945) + 159.7089
+    return [y1, y2, y3]
 }
 
 
