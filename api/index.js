@@ -16,7 +16,7 @@ bot.onText(/\/start/, (msg) => {
     console.log(msg)
     bot.sendMessage(
         msg.chat.id,
-        `hello ${msg.chat.first_name}, welcome...\n
+        `hello ${msg.chat.first_name}, welcome... Bot UAS SC Rizky\n
         click /predict`
     );  
 });
